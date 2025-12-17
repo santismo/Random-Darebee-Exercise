@@ -1,0 +1,42 @@
+{
+  "type": {
+    "strength": "https://darebee.com/workout/types/strength.html",
+    "cardio": "https://darebee.com/workout/types/cardio.html",
+    "metcon": "https://darebee.com/workout/types/metcon.html",
+    "hiit": "https://darebee.com/workout/types/hiit.html",
+    "combat": "https://darebee.com/workout/types/combat.html",
+    "stretching": "https://darebee.com/workout/types/stretching.html",
+    "yoga": "https://darebee.com/workout/types/yoga.html",
+    "wellness": "https://darebee.com/workout/types/wellness.html"
+  },
+  "focus": {
+    "full-body": "https://darebee.com/workout/focus/full-body.html",
+    "upper-body": "https://darebee.com/workout/focus/upper-body.html",
+    "lower-body": "https://darebee.com/workout/focus/lower-body.html",
+    "abs": "https://darebee.com/workout/focus/abs.html"
+  },
+  "difficulty": {
+    "light": "https://darebee.com/workout/difficulty/light.html",
+    "easy": "https://darebee.com/workout/difficulty/easy.html",
+    "normal": "https://darebee.com/workout/difficulty/normal.html",
+    "hard": "https://darebee.com/workout/difficulty/hard.html",
+    "advanced": "https://darebee.com/workout/difficulty/advanced.html"
+  },
+  "tools": {
+    "dumbbells": "https://darebee.com/workout/tools/dumbbells.html",
+    "pull-up-bar": "https://darebee.com/workout/tools/pull-up-bar.html",
+    "kettlebells": "https://darebee.com/workout/tools/kettlebells.html",
+    "barbell": "https://darebee.com/workout/tools/barbell.html",
+    "swiss-ball": "https://darebee.com/workout/tools/swiss-ball.html",
+    "weapons": "https://darebee.com/workout/tools/weapons.html",
+    "other": "https://darebee.com/workout/tools/other.html"
+  },
+  "specialty": {
+    "seated": "https://darebee.com/workout/specialty/seated.html",
+    "office-friendly": "https://darebee.com/workout/specialty/office-friendly.html"
+  },
+  "equipment": {
+    "no": "https://darebee.com/workout/equipment/no.html",
+    "yes": "https://darebee.com/workout/equipment/yes.html"
+  }
+}
