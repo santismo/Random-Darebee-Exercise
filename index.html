@@ -1,124 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Random DAREBEE Workout</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 24px; line-height: 1.4; }
-    button { font-size: 18px; padding: 12px 16px; cursor: pointer; }
-    #status { margin-top: 12px; opacity: 0.8; }
-  </style>
 </head>
 <body>
-  <h1>Random DAREBEE Workout</h1>
-  <button id="go">Get Random Workout</button>
-  <div id="status"></div>
+  <button id="go">Random workout</button>
+  <p id="status"></p>
 
-<script>
-  // NOTE: Browsers block cross-origin HTML scraping from GitHub Pages -> darebee.com (CORS).
-  // This uses a CORS-friendly mirror of the page content:
-  // r.jina.ai/https://<url>  (returns readable HTML/text with permissive CORS)
-  const MIRROR = (url) => "https://r.jina.ai/https://" + url.replace(/^https?:\/\//, "");
-  const LISTING_BASE = "https://darebee.com/workouts.html";
-  const DAREBEE_ORIGIN = "https://darebee.com";
+  <script>
+    async function go() {
+      const status = document.getElementById("status");
+      status.textContent = "Loading workout list…";
 
-  const statusEl = document.getElementById("status");
-  const btn = document.getElementById("go");
+      const data = await fetch("./workouts.json", { cache: "no-store" }).then(r => r.json());
+      const urls = data.urls;
+      const pick = urls[Math.floor(Math.random() * urls.length)];
 
-  function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  function parseHtml(htmlText) {
-    const doc = new DOMParser().parseFromString(htmlText, "text/html");
-    return doc;
-  }
-
-  function extractWorkoutLinks(doc) {
-    const links = Array.from(doc.querySelectorAll('a[href^="/workouts/"][href$=".html"]'))
-      .map(a => a.getAttribute("href"))
-      .filter(h => h && !/\/workouts\.html(\?|$)/i.test(h)); // exclude the listing page itself
-
-    // Deduplicate
-    const seen = new Set();
-    const urls = [];
-    for (const href of links) {
-      const abs = new URL(href, DAREBEE_ORIGIN).href;
-      if (!seen.has(abs)) {
-        seen.add(abs);
-        urls.push(abs);
-      }
-    }
-    return urls;
-  }
-
-  function inferMaxStart(doc) {
-    // Darebee listing uses ?start=15 increments. We look for any links containing "workouts.html?start="
-    const starts = Array.from(doc.querySelectorAll('a[href*="workouts.html?start="]'))
-      .map(a => a.getAttribute("href"))
-      .map(h => {
-        try { return new URL(h, DAREBEE_ORIGIN).searchParams.get("start"); } catch { return null; }
-      })
-      .map(s => s === null ? null : parseInt(s, 10))
-      .filter(n => Number.isFinite(n));
-
-    // If we can't detect, fall back to a reasonable range (you can raise this if needed)
-    if (!starts.length) return 15 * 200; // ~200 pages
-    return Math.max(...starts);
-  }
-
-  async function fetchDoc(url) {
-    const mirrored = MIRROR(url);
-    const res = await fetch(mirrored, { cache: "no-store" });
-    if (!res.ok) throw new Error("Fetch failed: " + res.status);
-    const text = await res.text();
-    return parseHtml(text);
-  }
-
-  async function goRandom() {
-    btn.disabled = true;
-
-    try {
-      statusEl.textContent = "Loading workout index…";
-      const firstDoc = await fetchDoc(LISTING_BASE);
-
-      const maxStart = inferMaxStart(firstDoc);
-      const step = 15;
-      const pages = Math.floor(maxStart / step) + 1;
-      const randomStart = randInt(0, pages - 1) * step;
-
-      const pageUrl = randomStart === 0
-        ? LISTING_BASE
-        : `${LISTING_BASE}?start=${randomStart}`;
-
-      statusEl.textContent = `Picking from a random listing page (start=${randomStart})…`;
-      const pageDoc = (randomStart === 0) ? firstDoc : await fetchDoc(pageUrl);
-
-      const workouts = extractWorkoutLinks(pageDoc);
-      if (!workouts.length) {
-        // Try again (rare, but keeps it simple)
-        statusEl.textContent = "No workouts found on that page — retrying…";
-        btn.disabled = false;
-        return goRandom();
-      }
-
-      const pick = workouts[randInt(0, workouts.length - 1)];
-      statusEl.textContent = "Redirecting…";
+      status.textContent = "Redirecting…";
       window.location.href = pick;
-
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent =
-        "Couldn’t load the Darebee listing (CORS/mirror might be down). Try again.";
-      btn.disabled = false;
     }
-  }
 
-  btn.addEventListener("click", goRandom);
-
-  // Optional: auto-run on load
-  // goRandom();
-</script>
+    document.getElementById("go").addEventListener("click", go);
+    // Optional: auto-run
+    // go();
+  </script>
 </body>
 </html>
