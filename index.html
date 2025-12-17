@@ -2,145 +2,262 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Random DAREBEE Workout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Random DAREBEE Workout Picker</title>
+
 <style>
-  :root{--bg:#0e0e11;--panel:#16161d;--text:#e6e6eb;--muted:#9a9aaa;--accent:#7aa2ff;--err:#ff6b6b;}
-  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:18px;}
-  .card{width:min(760px,100%);background:var(--panel);border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
-  h1{margin:0 0 12px;font-size:1.25rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px;}
-  label{font-size:.85rem;color:var(--muted)}
-  select,button{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#111118;color:var(--text);}
-  select[multiple]{min-height:140px}
-  button{border:none;background:var(--accent);color:#0b0b10;font-weight:800;cursor:pointer;margin-top:10px}
-  button:disabled{opacity:.55;cursor:not-allowed}
-  #status{margin-top:10px;color:var(--muted);min-height:1.2em}
-  #status.err{color:var(--err)}
+  :root{
+    --bg:#0b0c10;
+    --panel:#12141b;
+    --panel2:#0f1118;
+    --text:#e7e9ee;
+    --muted:#a0a6b5;
+    --accent:#7aa2ff;
+    --border:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:linear-gradient(180deg, var(--bg), #07080c);
+    color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  }
+  .wrap{
+    max-width:1100px;
+    margin:0 auto;
+    padding:18px;
+  }
+  .top{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  h1{
+    margin:0 0 10px;
+    font-size:1.15rem;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .row > *{flex:1 1 160px}
+  label{
+    display:block;
+    font-size:.82rem;
+    color:var(--muted);
+    margin:0 0 6px;
+  }
+  select, input[type="number"]{
+    width:100%;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--panel2);
+    color:var(--text);
+    outline:none;
+  }
+  button{
+    width:100%;
+    padding:11px 12px;
+    border-radius:10px;
+    border:none;
+    background:var(--accent);
+    color:#0b0c10;
+    font-weight:800;
+    cursor:pointer;
+  }
+  button:disabled{opacity:.55; cursor:not-allowed}
+  #status{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:.9rem;
+    min-height:1.1em;
+  }
+
+  .grid{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
+    gap:10px;
+  }
+  .tile{
+    display:block;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    overflow:hidden;
+    text-decoration:none;
+    color:inherit;
+    position:relative;
+  }
+  .tile img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    display:block;
+    background:#0a0b10;
+  }
+  .cap{
+    padding:10px 10px 11px;
+    font-size:.85rem;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .badge{
+    position:absolute;
+    left:10px;
+    top:10px;
+    background:rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.12);
+    color:var(--text);
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:.78rem;
+    backdrop-filter: blur(6px);
+  }
 </style>
 </head>
+
 <body>
-<div class="card">
-  <h1>Random DAREBEE Workout</h1>
+<div class="wrap">
+  <div class="top">
+    <h1>Random DAREBEE Workouts</h1>
 
-  <div class="grid" id="filters"></div>
+    <div class="row">
+      <div>
+        <label for="count">How many to show</label>
+        <select id="count">
+          <option value="6">6</option>
+          <option value="12" selected>12</option>
+          <option value="24">24</option>
+          <option value="36">36</option>
+        </select>
+      </div>
 
-  <button id="go">Random from Filters</button>
-  <button id="total">Total Random (ignore filters)</button>
-  <div id="status"></div>
+      <div>
+        <label>&nbsp;</label>
+        <button id="reroll">Reroll</button>
+      </div>
+    </div>
+
+    <div id="status"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
 </div>
 
 <script>
-const statusEl = document.getElementById("status");
-const filtersEl = document.getElementById("filters");
-const goBtn = document.getElementById("go");
-const totalBtn = document.getElementById("total");
+  const grid = document.getElementById("grid");
+  const statusEl = document.getElementById("status");
+  const rerollBtn = document.getElementById("reroll");
+  const countEl = document.getElementById("count");
 
-function setStatus(msg, err=false){ statusEl.textContent = msg; statusEl.className = err ? "err" : ""; }
+  let WORKOUT_URLS = null;
 
-async function loadJSON(name){
-  const url = new URL(name, window.location.href).toString();
-  const res = await fetch(url, {cache:"no-store"});
-  if(!res.ok) throw new Error(`${name} fetch failed (HTTP ${res.status})`);
-  return res.json();
-}
+  function setStatus(msg){ statusEl.textContent = msg; }
 
-function pickRandom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-
-function selectedValues(select){
-  return Array.from(select.selectedOptions).map(o => o.value);
-}
-
-let ALL_URLS = null;
-let META = null;
-let FACETS = null;
-let selects = {};
-
-function buildUI(facets){
-  // facets.json is the list of available facet values you’re indexing
-  const facetOrder = ["type","focus","difficulty","tools","equipment","specialty"];
-
-  for (const facet of facetOrder) {
-    const options = facets[facet] || {};
-    const wrap = document.createElement("div");
-
-    const lab = document.createElement("label");
-    lab.textContent = facet.toUpperCase();
-    wrap.appendChild(lab);
-
-    const sel = document.createElement("select");
-    sel.multiple = true;
-
-    Object.keys(options).sort().forEach(key => {
-      const opt = document.createElement("option");
-      opt.value = key;
-      opt.textContent = key;
-      sel.appendChild(opt);
-    });
-
-    selects[facet] = sel;
-    wrap.appendChild(sel);
-    filtersEl.appendChild(wrap);
+  function uniqueRandomIndices(n, max){
+    const set = new Set();
+    while(set.size < Math.min(n, max)){
+      set.add(Math.floor(Math.random() * max));
+    }
+    return Array.from(set);
   }
-}
 
-function matchesFilters(url, filters){
-  const m = META[url];
-  for (const [facet, wanted] of Object.entries(filters)) {
-    if (!wanted.length) continue; // no filter selected
-    const have = (m && m[facet]) ? m[facet] : [];
-    // OR logic within facet (like Darebee’s “A|B|C” behavior)
-    if (!wanted.some(v => have.includes(v))) return false;
+  // Convert workout page URL -> image URL
+  // https://darebee.com/workouts/<slug>.html  => https://darebee.com/images/workouts/<slug>.jpg
+  function workoutPageToImage(pageUrl){
+    const u = new URL(pageUrl);
+    const slugHtml = u.pathname.split("/").pop();   // "<slug>.html"
+    const slug = slugHtml.replace(/\.html$/i, "");  // "<slug>"
+    return `https://darebee.com/images/workouts/${slug}.jpg`;
   }
-  return true;
-}
 
-function getCurrentFilters(){
-  const out = {};
-  for (const facet of Object.keys(selects)) out[facet] = selectedValues(selects[facet]);
-  return out;
-}
+  // Show a tile, and if the image errors (404), replace with another random workout.
+  function makeTile(pageUrl, indexLabel){
+    const a = document.createElement("a");
+    a.className = "tile";
+    a.href = pageUrl;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
 
-async function init(){
-  try{
-    setStatus("Loading data…");
-    const workouts = await loadJSON("workouts.json");
-    ALL_URLS = Array.isArray(workouts) ? workouts : workouts.urls;
+    const badge = document.createElement("div");
+    badge.className = "badge";
+    badge.textContent = `#${indexLabel}`;
+    a.appendChild(badge);
 
-    META = await loadJSON("meta.json");
-    FACETS = await loadJSON("facets.json");
+    const img = document.createElement("img");
+    img.loading = "lazy";
 
-    buildUI(FACETS);
-    setStatus("Ready.");
-  } catch(e){
-    console.error(e);
-    setStatus(e.message, true);
-    goBtn.disabled = true;
-    totalBtn.disabled = true;
+    const cap = document.createElement("div");
+    cap.className = "cap";
+    cap.textContent = new URL(pageUrl).pathname.split("/").pop().replace(/\.html$/i, "");
+
+    function setFromPage(url){
+      img.src = workoutPageToImage(url);
+      a.href = url;
+      cap.textContent = new URL(url).pathname.split("/").pop().replace(/\.html$/i, "");
+    }
+
+    img.onerror = () => {
+      // Replace with a new random one
+      if (!WORKOUT_URLS || !WORKOUT_URLS.length) return;
+      const replacement = WORKOUT_URLS[Math.floor(Math.random() * WORKOUT_URLS.length)];
+      setFromPage(replacement);
+    };
+
+    setFromPage(pageUrl);
+
+    a.appendChild(img);
+    a.appendChild(cap);
+    return a;
   }
-}
 
-goBtn.addEventListener("click", () => {
-  try{
-    const filters = getCurrentFilters();
-    const pool = ALL_URLS.filter(u => matchesFilters(u, filters));
-    if (!pool.length) { setStatus("No workouts match those filters.", true); return; }
-    setStatus(`Picking from ${pool.length} workouts…`);
-    location.href = pickRandom(pool);
-  } catch(e){
-    console.error(e);
-    setStatus(e.message, true);
+  async function loadWorkoutsJSON(){
+    const jsonURL = new URL("workouts.json", window.location.href).toString();
+    const res = await fetch(jsonURL, { cache: "no-store", headers: { "Accept": "application/json" }});
+    if (!res.ok) throw new Error(`Failed to load workouts.json (HTTP ${res.status})`);
+    const data = await res.json();
+    const urls = Array.isArray(data) ? data : data.urls;
+    if (!Array.isArray(urls) || !urls.length) throw new Error("workouts.json has no URLs");
+    return urls;
   }
-});
 
-totalBtn.addEventListener("click", () => {
-  if(!ALL_URLS?.length){ setStatus("Workout list not loaded.", true); return; }
-  setStatus(`Picking from ${ALL_URLS.length} workouts…`);
-  location.href = pickRandom(ALL_URLS);
-});
+  async function render(){
+    rerollBtn.disabled = true;
+    try{
+      setStatus("Loading workouts.json…");
+      if (!WORKOUT_URLS) WORKOUT_URLS = await loadWorkoutsJSON();
 
-init();
+      const n = parseInt(countEl.value, 10) || 12;
+      const picks = uniqueRandomIndices(n, WORKOUT_URLS.length).map(i => WORKOUT_URLS[i]);
+
+      grid.innerHTML = "";
+      setStatus(`Showing ${picks.length} random workouts…`);
+
+      picks.forEach((url, i) => grid.appendChild(makeTile(url, i + 1)));
+
+    } catch (e){
+      console.error(e);
+      setStatus("Error: " + e.message);
+    } finally {
+      rerollBtn.disabled = false;
+    }
+  }
+
+  rerollBtn.addEventListener("click", render);
+  countEl.addEventListener("change", render);
+
+  render();
 </script>
 </body>
 </html>
