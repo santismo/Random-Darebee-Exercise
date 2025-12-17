@@ -182,7 +182,15 @@
         <div><label for="difficulty">Difficulty</label><select id="difficulty" multiple></select></div>
 
         <div><label for="tools">Equipment Type (Tools)</label><select id="tools" multiple></select></div>
-        <div><label for="equipment">Equipment (Yes/No)</label><select id="equipment" multiple></select></div>
+
+        <!-- FIX: This filter is *computed* from tools/equipment and always works -->
+        <div><label for="hasTools">Equipment (Has tools?)</label>
+          <select id="hasTools" multiple>
+            <option value="yes">yes</option>
+            <option value="no">no</option>
+          </select>
+        </div>
+
         <div><label for="specialty">Specialty</label><select id="specialty" multiple></select></div>
       </div>
     </div>
@@ -212,7 +220,7 @@ const selects = {
   focus: document.getElementById("focus"),
   difficulty: document.getElementById("difficulty"),
   tools: document.getElementById("tools"),           // dumbbells etc.
-  equipment: document.getElementById("equipment"),   // yes/no
+  hasTools: document.getElementById("hasTools"),     // derived yes/no
   specialty: document.getElementById("specialty"),
 };
 
@@ -253,25 +261,16 @@ function normalizeMeta(metaRaw){
   function normFields(m){
     const mm = m || {};
     const tools = mm.tools || mm.tool || mm.equipmentType || mm.equipment_type || [];
-    let equipment = mm.equipment || mm.hasEquipment || mm.has_equipment || [];
-
     const norm = {
       type: mm.type || [],
       focus: mm.focus || [],
       difficulty: mm.difficulty || [],
       tools: Array.isArray(tools) ? tools.slice() : [],
-      equipment: Array.isArray(equipment) ? equipment.slice() : [],
       specialty: mm.specialty || [],
     };
 
-    // If yes/no ended up in tools and equipment is empty, move it
-    if (norm.equipment.length === 0 && Array.isArray(norm.tools)) {
-      const yn = norm.tools.filter(v => v === "yes" || v === "no");
-      if (yn.length) {
-        norm.equipment = yn;
-        norm.tools = norm.tools.filter(v => v !== "yes" && v !== "no");
-      }
-    }
+    // If "yes/no" accidentally ended up in tools, remove it (we compute hasTools separately)
+    norm.tools = norm.tools.filter(v => v !== "yes" && v !== "no");
     return norm;
   }
 
@@ -306,11 +305,22 @@ function selected(sel){
 
 function matches(url, filters){
   const m = META[url] || {};
-  for(const [facet, wanted] of Object.entries(filters)){
+
+  // Standard facets
+  for(const facet of ["type","focus","difficulty","tools","specialty"]){
+    const wanted = filters[facet] || [];
     if(!wanted.length) continue;
     const have = Array.isArray(m[facet]) ? m[facet] : [];
     if(!wanted.some(x => have.includes(x))) return false; // OR logic within facet
   }
+
+  // Derived yes/no: "hasTools"
+  const wantedHas = filters.hasTools || [];
+  if (wantedHas.length) {
+    const has = (Array.isArray(m.tools) && m.tools.length > 0) ? "yes" : "no";
+    if (!wantedHas.includes(has)) return false;
+  }
+
   return true;
 }
 
@@ -354,13 +364,15 @@ function makeItem(url){
     s.textContent = workoutSlugFromUrl(pageUrl);
     img.src = pageToImage(pageUrl);
 
-    // Only show tags when in filtered mode (cleaner)
     tags.innerHTML = "";
     if (modeEl.value === "filtered") {
       const m = META[pageUrl] || {};
-      ["type","focus","difficulty","tools","equipment","specialty"].forEach(k=>{
+      ["type","focus","difficulty","specialty"].forEach(k=>{
         (m[k] || []).slice(0,2).forEach(v => tags.appendChild(makeTag(`${k}:${v}`)));
       });
+      // show a bit of tools + derived hasTools
+      (m.tools || []).slice(0,2).forEach(v => tags.appendChild(makeTag(`tools:${v}`)));
+      tags.appendChild(makeTag(`hasTools:${(m.tools && m.tools.length) ? "yes" : "no"}`));
     }
   }
 
@@ -382,13 +394,11 @@ function makeItem(url){
 function updateFiltersVisibility(){
   const show = modeEl.value === "filtered";
   filtersWrap.classList.toggle("hidden", !show);
-  // Only enable clear button when filters are visible
   clearBtn.disabled = !show;
 }
 
 async function init(){
   try{
-    // Default mode = total random
     modeEl.value = "total";
     updateFiltersVisibility();
 
@@ -402,7 +412,7 @@ async function init(){
     META = normalizeMeta(metaRaw);
 
     // Populate dropdown options from normalized META
-    for(const facet of Object.keys(selects)){
+    for(const facet of ["type","focus","difficulty","tools","specialty"]){
       const vals = new Set();
       for (const u of WORKOUTS){
         (META[u]?.[facet] || []).forEach(v => vals.add(v));
@@ -424,6 +434,7 @@ async function init(){
 }
 
 function clearFilters(){
+  // Clear multi-selects
   Object.values(selects).forEach(sel => Array.from(sel.options).forEach(o => o.selected = false));
 }
 
@@ -432,12 +443,11 @@ function generate(){
     if(!WORKOUTS || !META) { setStatus("Not loaded yet.", true); return; }
 
     const n = Math.max(1, Math.min(100, parseInt(countEl.value, 10) || 12));
-
     let pool = WORKOUTS;
 
     if(modeEl.value === "filtered"){
       const filters = {};
-      Object.keys(selects).forEach(k => filters[k] = selected(selects[k]));
+      for (const k of Object.keys(selects)) filters[k] = selected(selects[k]);
       pool = WORKOUTS.filter(u => matches(u, filters));
     }
 
@@ -466,7 +476,6 @@ clearBtn.addEventListener("click", () => {
 
 modeEl.addEventListener("change", () => {
   updateFiltersVisibility();
-  // Optional: refresh results automatically when switching modes
   generate();
 });
 
