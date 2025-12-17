@@ -1,45 +1,80 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Random DAREBEE Workout</title>
-  <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 24px; line-height: 1.4; }
-    button { font-size: 18px; padding: 12px 16px; cursor: pointer; }
-    code { background: #f2f2f2; padding: 2px 6px; border-radius: 6px; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Random DAREBEE Workout</title>
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    padding: 24px;
+    text-align: center;
+  }
+  button {
+    font-size: 18px;
+    padding: 12px 18px;
+    cursor: pointer;
+  }
+  #status {
+    margin-top: 12px;
+    opacity: 0.8;
+  }
+  iframe {
+    display: none;
+  }
+</style>
 </head>
+
 <body>
   <h1>Random DAREBEE Workout</h1>
-  <p>Opens a random workout from <code>1</code> to <code>2629</code>.</p>
+  <button onclick="loadWorkout()">Get Workout</button>
+  <div id="status"></div>
 
-  <button id="go">Get Random Workout</button>
-  <p id="status"></p>
+  <!-- Hidden iframe used for validation -->
+  <iframe id="checker"></iframe>
 
-  <script>
-    const MIN = 1;
-    const MAX = 2629;
+<script>
+const MIN = 1;
+const MAX = 2629;
+const MAX_ATTEMPTS = 20;
 
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
-    function openRandomWorkout() {
-      const n = randInt(MIN, MAX);
-      const url = `https://darebee.com/workouts/${n}.html`;
-      document.getElementById("status").textContent = `Loading workout #${n}…`;
-      // Redirect this tab:
+function loadWorkout(attempt = 1) {
+  if (attempt > MAX_ATTEMPTS) {
+    document.getElementById("status").textContent =
+      "Could not find a valid workout. Try again.";
+    return;
+  }
+
+  const n = rand(MIN, MAX);
+  const url = "https://darebee.com/workouts/" + n + ".html";
+
+  document.getElementById("status").textContent =
+    `Trying workout #${n} (attempt ${attempt})…`;
+
+  const iframe = document.getElementById("checker");
+  iframe.src = url;
+
+  iframe.onload = () => {
+    try {
+      const loadedUrl = iframe.contentWindow.location.href;
+
+      // Darebee redirects missing pages to /404
+      if (loadedUrl.includes("/404")) {
+        loadWorkout(attempt + 1);
+      } else {
+        window.location.href = url;
+      }
+    } catch (e) {
+      // Cross-origin fallback — assume valid and redirect
       window.location.href = url;
-
-      // If you'd rather open in a new tab, use:
-      // window.open(url, "_blank", "noopener,noreferrer");
     }
-
-    document.getElementById("go").addEventListener("click", openRandomWorkout);
-
-    // Optional: auto-run on page load
-    // openRandomWorkout();
-  </script>
+  };
+}
+</script>
 </body>
 </html>
