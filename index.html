@@ -7,18 +7,32 @@
 
 <style>
   :root{
-    --bg:#0b0c10; --panel:#12141b; --panel2:#0f1118;
-    --text:#e7e9ee; --muted:#a0a6b5; --accent:#7aa2ff;
-    --border:rgba(255,255,255,.09); --err:#ff6b6b;
+    --bg:#0b0c10;
+    --panel:#12141b;
+    --panel2:#0f1118;
+    --text:#e7e9ee;
+    --muted:#a0a6b5;
+    --accent:#7aa2ff;
+    --border:rgba(255,255,255,.09);
+    --err:#ff6b6b;
   }
-  *{box-sizing:border-box}
+
+  *{ box-sizing:border-box }
+
   body{
-    margin:0; min-height:100vh;
+    margin:0;
+    min-height:100vh;
     background:linear-gradient(180deg, var(--bg), #07080c);
     color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   }
-  .wrap{max-width:760px;margin:0 auto;padding:16px}
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:16px;
+  }
+
   .card{
     background:var(--panel);
     border:1px solid var(--border);
@@ -26,18 +40,30 @@
     padding:14px;
     box-shadow:0 20px 60px rgba(0,0,0,.45);
   }
-  h1{margin:0 0 10px;font-size:1.15rem;font-weight:800}
 
+  h1{
+    margin:0 0 10px;
+    font-size:1.15rem;
+    font-weight:800;
+  }
+
+  /* Controls */
   .controls{
     display:grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:1fr 1fr;
     gap:10px;
   }
-  @media (max-width: 560px){
-    .controls{grid-template-columns:1fr}
+  @media (max-width:560px){
+    .controls{ grid-template-columns:1fr }
   }
 
-  label{display:block;font-size:.82rem;color:var(--muted);margin:0 0 6px}
+  label{
+    display:block;
+    font-size:.82rem;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+
   select,input{
     width:100%;
     padding:10px 12px;
@@ -45,16 +71,21 @@
     border:1px solid var(--border);
     background:var(--panel2);
     color:var(--text);
-    outline:none;
   }
-  select[multiple]{min-height:132px}
 
-  .buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-  @media (max-width: 560px){
-    .buttons{grid-template-columns:1fr}
+  select[multiple]{ min-height:132px }
+
+  .buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
   }
+  @media (max-width:560px){
+    .buttons{ grid-template-columns:1fr }
+  }
+
   button{
-    width:100%;
     padding:11px 12px;
     border-radius:10px;
     border:none;
@@ -63,19 +94,30 @@
     font-weight:900;
     cursor:pointer;
   }
+
   button.secondary{
     background:transparent;
     color:var(--text);
     border:1px solid var(--border);
-    font-weight:800;
   }
-  button:disabled{opacity:.55;cursor:not-allowed}
 
-  #status{margin-top:10px;color:var(--muted);min-height:1.1em}
-  #status.err{color:var(--err)}
+  button:disabled{ opacity:.55; cursor:not-allowed }
+
+  #status{
+    margin-top:10px;
+    color:var(--muted);
+    min-height:1.1em;
+  }
+  #status.err{ color:var(--err) }
 
   /* One-column list */
-  .list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+  .list{
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
   .item{
     display:block;
     text-decoration:none;
@@ -85,28 +127,43 @@
     border-radius:14px;
     overflow:hidden;
   }
+
+  /* 🔑 NO CROPPING */
   .item img{
     width:100%;
-    height:320px;
-    object-fit:cover;
+    height:auto;
     display:block;
+    object-fit:contain;
     background:#0a0b10;
   }
+
   .meta{
     padding:10px 12px;
     display:flex;
     flex-direction:column;
     gap:6px;
   }
-  .slug{color:var(--muted);font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tags{display:flex;flex-wrap:wrap;gap:6px}
+
+  .slug{
+    font-size:.86rem;
+    color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+
   .tag{
     font-size:.75rem;
-    color:var(--text);
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
     padding:3px 8px;
     border-radius:999px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
   }
 </style>
 </head>
@@ -118,52 +175,29 @@
 
     <div class="controls">
       <div>
-        <label for="count">How many to display</label>
-        <input id="count" type="number" min="1" max="100" value="12" />
+        <label>How many to display</label>
+        <input id="count" type="number" min="1" max="100" value="12">
       </div>
 
       <div>
-        <label for="mode">Pick mode</label>
+        <label>Mode</label>
         <select id="mode">
-          <option value="filtered" selected>Filtered Random</option>
-          <option value="total">Total Random (ignore filters)</option>
+          <option value="filtered">Filtered Random</option>
+          <option value="total">Total Random</option>
         </select>
       </div>
 
-      <div>
-        <label for="type">Type</label>
-        <select id="type" multiple></select>
-      </div>
-
-      <div>
-        <label for="focus">Focus</label>
-        <select id="focus" multiple></select>
-      </div>
-
-      <div>
-        <label for="difficulty">Difficulty</label>
-        <select id="difficulty" multiple></select>
-      </div>
-
-      <div>
-        <label for="tools">Equipment Type</label>
-        <select id="tools" multiple></select>
-      </div>
-
-      <div>
-        <label for="equipment">Equipment (Yes/No)</label>
-        <select id="equipment" multiple></select>
-      </div>
-
-      <div>
-        <label for="specialty">Specialty</label>
-        <select id="specialty" multiple></select>
-      </div>
+      <div><label>Type</label><select id="type" multiple></select></div>
+      <div><label>Focus</label><select id="focus" multiple></select></div>
+      <div><label>Difficulty</label><select id="difficulty" multiple></select></div>
+      <div><label>Equipment Type</label><select id="tools" multiple></select></div>
+      <div><label>Equipment</label><select id="equipment" multiple></select></div>
+      <div><label>Specialty</label><select id="specialty" multiple></select></div>
     </div>
 
     <div class="buttons">
       <button id="go">Generate</button>
-      <button id="clear" class="secondary">Clear filters</button>
+      <button id="clear" class="secondary">Clear Filters</button>
     </div>
 
     <div id="status"></div>
@@ -173,232 +207,160 @@
 </div>
 
 <script>
-  const statusEl = document.getElementById("status");
-  const listEl = document.getElementById("list");
-  const goBtn = document.getElementById("go");
-  const clearBtn = document.getElementById("clear");
+const statusEl = document.getElementById("status");
+const listEl = document.getElementById("list");
+const goBtn = document.getElementById("go");
+const clearBtn = document.getElementById("clear");
+const countEl = document.getElementById("count");
+const modeEl = document.getElementById("mode");
 
-  const countEl = document.getElementById("count");
-  const modeEl = document.getElementById("mode");
+const selects = {
+  type: document.getElementById("type"),
+  focus: document.getElementById("focus"),
+  difficulty: document.getElementById("difficulty"),
+  tools: document.getElementById("tools"),
+  equipment: document.getElementById("equipment"),
+  specialty: document.getElementById("specialty"),
+};
 
-  const selects = {
-    type: document.getElementById("type"),
-    focus: document.getElementById("focus"),
-    difficulty: document.getElementById("difficulty"),
-    tools: document.getElementById("tools"),
-    equipment: document.getElementById("equipment"),
-    specialty: document.getElementById("specialty"),
+let WORKOUTS = null;
+let META = null;
+
+function setStatus(t, err=false){
+  statusEl.textContent = t;
+  statusEl.className = err ? "err" : "";
+}
+
+async function loadJSON(name){
+  const url = new URL(name, location.href).toString();
+  const r = await fetch(url, { cache:"no-store" });
+  if(!r.ok) throw new Error(`${name} failed (${r.status})`);
+  return r.json();
+}
+
+function pageToImage(url){
+  const slug = url.split("/").pop().replace(".html","");
+  return `https://darebee.com/images/workouts/${slug}.jpg`;
+}
+
+function slug(url){ return url.split("/").pop().replace(".html",""); }
+
+function selected(sel){
+  return Array.from(sel.selectedOptions).map(o=>o.value);
+}
+
+function matches(url, filters){
+  const m = META[url] || {};
+  for(const [k,v] of Object.entries(filters)){
+    if(!v.length) continue;
+    if(!v.some(x => (m[k]||[]).includes(x))) return false;
+  }
+  return true;
+}
+
+function sample(arr,n){
+  const out = new Set();
+  while(out.size < Math.min(n, arr.length)){
+    out.add(arr[Math.floor(Math.random()*arr.length)]);
+  }
+  return [...out];
+}
+
+function makeItem(url){
+  const a = document.createElement("a");
+  a.className = "item";
+  a.href = url;
+  a.target = "_blank";
+
+  const img = document.createElement("img");
+  img.loading = "lazy";
+  img.src = pageToImage(url);
+  img.onerror = () => {
+    if(WORKOUTS?.length){
+      const r = WORKOUTS[Math.floor(Math.random()*WORKOUTS.length)];
+      img.src = pageToImage(r);
+      a.href = r;
+    }
   };
 
-  let WORKOUTS = null; // array of workout page URLs
-  let META = null;    // object: workoutUrl -> { type:[...], focus:[...], ... }
+  const meta = document.createElement("div");
+  meta.className = "meta";
 
-  function setStatus(msg, err=false){
-    statusEl.textContent = msg;
-    statusEl.className = err ? "err" : "";
-  }
+  const s = document.createElement("div");
+  s.className = "slug";
+  s.textContent = slug(url);
 
-  async function loadJSON(filename){
-    const url = new URL(filename, window.location.href).toString();
-    const res = await fetch(url, { cache: "no-store", headers: { "Accept":"application/json" }});
-    if (!res.ok) throw new Error(`${filename} fetch failed (HTTP ${res.status})`);
-    return res.json();
-  }
+  const tags = document.createElement("div");
+  tags.className = "tags";
 
-  function workoutPageToImage(pageUrl){
-    const u = new URL(pageUrl);
-    const slugHtml = u.pathname.split("/").pop();     // "<slug>.html"
-    const slug = slugHtml.replace(/\.html$/i, "");    // "<slug>"
-    return `https://darebee.com/images/workouts/${slug}.jpg`;
-  }
-
-  function slugFromPage(pageUrl){
-    return new URL(pageUrl).pathname.split("/").pop().replace(/\.html$/i, "");
-  }
-
-  function selectedValues(sel){
-    return Array.from(sel.selectedOptions).map(o => o.value);
-  }
-
-  function setOptions(sel, values){
-    sel.innerHTML = "";
-    values.forEach(v => {
-      const opt = document.createElement("option");
-      opt.value = v;
-      opt.textContent = v;
-      sel.appendChild(opt);
+  Object.entries(META[url]||{}).forEach(([k,v])=>{
+    v.slice(0,2).forEach(x=>{
+      const t=document.createElement("span");
+      t.className="tag";
+      t.textContent=`${k}:${x}`;
+      tags.appendChild(t);
     });
-  }
+  });
 
-  function uniqueRandomSample(arr, n){
-    const k = Math.min(n, arr.length);
-    const picked = new Set();
-    while (picked.size < k){
-      picked.add(Math.floor(Math.random() * arr.length));
-    }
-    return Array.from(picked).map(i => arr[i]);
-  }
+  meta.append(s,tags);
+  a.append(img,meta);
+  return a;
+}
 
-  function matchesFilters(url, filters){
-    const m = META[url] || {};
-    for (const [facet, wanted] of Object.entries(filters)){
-      if (!wanted.length) continue;
-      const have = Array.isArray(m[facet]) ? m[facet] : [];
-      // OR logic within a facet
-      if (!wanted.some(v => have.includes(v))) return false;
-    }
-    return true;
-  }
+async function init(){
+  try{
+    setStatus("Loading data…");
+    const w = await loadJSON("workouts.json");
+    WORKOUTS = Array.isArray(w)?w:w.urls;
+    META = await loadJSON("meta.json");
 
-  function getFilters(){
-    const f = {};
-    for (const key of Object.keys(selects)){
-      f[key] = selectedValues(selects[key]);
-    }
-    return f;
-  }
-
-  function clearFilters(){
-    for (const sel of Object.values(selects)){
-      Array.from(sel.options).forEach(o => o.selected = false);
-    }
-  }
-
-  function makeTag(text){
-    const d = document.createElement("span");
-    d.className = "tag";
-    d.textContent = text;
-    return d;
-  }
-
-  function makeItem(url){
-    const a = document.createElement("a");
-    a.className = "item";
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-
-    const img = document.createElement("img");
-    img.loading = "lazy";
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-
-    const slug = document.createElement("div");
-    slug.className = "slug";
-    slug.textContent = slugFromPage(url);
-
-    const tags = document.createElement("div");
-    tags.className = "tags";
-
-    const m = META[url] || {};
-    const showFacet = (facet, max=3) => {
-      const vals = Array.isArray(m[facet]) ? m[facet] : [];
-      vals.slice(0, max).forEach(v => tags.appendChild(makeTag(`${facet}:${v}`)));
-    };
-
-    // show a few tags so you can see why it matched
-    showFacet("type", 2);
-    showFacet("focus", 2);
-    showFacet("difficulty", 1);
-    showFacet("tools", 2);
-    showFacet("specialty", 2);
-    showFacet("equipment", 1);
-
-    function setFromPage(pageUrl){
-      a.href = pageUrl;
-      slug.textContent = slugFromPage(pageUrl);
-      img.src = workoutPageToImage(pageUrl);
+    for(const k in selects){
+      const vals = new Set();
+      WORKOUTS.forEach(u => (META[u]?.[k]||[]).forEach(v=>vals.add(v)));
+      selects[k].innerHTML = [...vals].sort().map(v=>`<option>${v}</option>`).join("");
     }
 
-    img.onerror = () => {
-      // replace this single item with a new random workout (keeps UX smooth)
-      if (!WORKOUTS?.length) return;
-      const replacement = WORKOUTS[Math.floor(Math.random() * WORKOUTS.length)];
-      setFromPage(replacement);
-    };
-
-    setFromPage(url);
-
-    meta.appendChild(slug);
-    meta.appendChild(tags);
-
-    a.appendChild(img);
-    a.appendChild(meta);
-    return a;
+    setStatus("Ready.");
+    generate();
+  }catch(e){
+    console.error(e);
+    setStatus(e.message,true);
   }
+}
 
-  async function init(){
-    try{
-      setStatus("Loading workouts + meta…");
-      const w = await loadJSON("workouts.json");
-      WORKOUTS = Array.isArray(w) ? w : w.urls;
+function generate(){
+  try{
+    const n = Math.max(1, parseInt(countEl.value)||12);
+    const filters = {};
+    Object.keys(selects).forEach(k => filters[k]=selected(selects[k]));
 
-      META = await loadJSON("meta.json");
-
-      // Build dropdown options from META (most reliable)
-      const facetValues = { type:new Set(), focus:new Set(), difficulty:new Set(), tools:new Set(), equipment:new Set(), specialty:new Set() };
-      for (const url of WORKOUTS){
-        const m = META[url];
-        if (!m) continue;
-        for (const facet of Object.keys(facetValues)){
-          const vals = Array.isArray(m[facet]) ? m[facet] : [];
-          vals.forEach(v => facetValues[facet].add(v));
-        }
-      }
-
-      for (const facet of Object.keys(selects)){
-        const values = Array.from(facetValues[facet]).sort();
-        setOptions(selects[facet], values);
-      }
-
-      setStatus("Ready.");
-    } catch(e){
-      console.error(e);
-      setStatus("Error: " + e.message, true);
-      goBtn.disabled = true;
+    let pool = WORKOUTS;
+    if(modeEl.value !== "total"){
+      pool = WORKOUTS.filter(u => matches(u,filters));
     }
-  }
 
-  async function generate(){
-    goBtn.disabled = true;
-    try{
-      if (!WORKOUTS || !META) throw new Error("Data not loaded yet.");
-
-      const n = Math.max(1, Math.min(100, parseInt(countEl.value, 10) || 12));
-      const mode = modeEl.value;
-
-      let pool = WORKOUTS;
-
-      if (mode !== "total"){
-        const filters = getFilters();
-        pool = WORKOUTS.filter(u => matchesFilters(u, filters));
-      }
-
-      if (!pool.length){
-        setStatus("No workouts match those filters.", true);
-        listEl.innerHTML = "";
-        return;
-      }
-
-      const picks = uniqueRandomSample(pool, n);
-      setStatus(`Showing ${picks.length} workouts (pool: ${pool.length})`);
-
-      listEl.innerHTML = "";
-      picks.forEach(u => listEl.appendChild(makeItem(u)));
-
-    } catch(e){
-      console.error(e);
-      setStatus("Error: " + e.message, true);
-    } finally {
-      goBtn.disabled = false;
+    if(!pool.length){
+      setStatus("No matches.",true);
+      listEl.innerHTML="";
+      return;
     }
+
+    setStatus(`Showing ${Math.min(n,pool.length)} workouts`);
+    listEl.innerHTML="";
+    sample(pool,n).forEach(u=>listEl.appendChild(makeItem(u)));
+  }catch(e){
+    console.error(e);
+    setStatus(e.message,true);
   }
+}
 
-  goBtn.addEventListener("click", generate);
-  clearBtn.addEventListener("click", () => { clearFilters(); setStatus("Filters cleared."); });
+goBtn.onclick = generate;
+clearBtn.onclick = () => {
+  Object.values(selects).forEach(s=>[...s.options].forEach(o=>o.selected=false));
+  setStatus("Filters cleared.");
+};
 
-  init().then(generate);
+init();
 </script>
 </body>
 </html>
