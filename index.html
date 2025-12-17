@@ -5,70 +5,142 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Random DAREBEE Workout</title>
 <style>
-  :root { --bg:#0e0e11; --panel:#16161d; --text:#e6e6eb; --muted:#9a9aaa; --accent:#7aa2ff; --err:#ff6b6b; }
+  :root{--bg:#0e0e11;--panel:#16161d;--text:#e6e6eb;--muted:#9a9aaa;--accent:#7aa2ff;--err:#ff6b6b;}
   body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text);
-       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:20px;}
-  .card{width:min(520px,100%);background:var(--panel);border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
-  h1{margin:0 0 14px;font-size:1.25rem}
-  select,button{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#111118;color:var(--text);font-size:1rem}
-  button{margin-top:10px;border:none;background:var(--accent);color:#0b0b10;font-weight:700;cursor:pointer}
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:18px;}
+  .card{width:min(760px,100%);background:var(--panel);border-radius:14px;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  h1{margin:0 0 12px;font-size:1.25rem}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:10px;}
+  label{font-size:.85rem;color:var(--muted)}
+  select,button{width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#111118;color:var(--text);}
+  select[multiple]{min-height:140px}
+  button{border:none;background:var(--accent);color:#0b0b10;font-weight:800;cursor:pointer;margin-top:10px}
   button:disabled{opacity:.55;cursor:not-allowed}
-  #status{margin-top:10px;color:var(--muted);font-size:.9rem;min-height:1.2em}
+  #status{margin-top:10px;color:var(--muted);min-height:1.2em}
   #status.err{color:var(--err)}
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Random DAREBEE Workout</h1>
-    <select id="cat"></select>
-    <button id="go">Go</button>
-    <div id="status"></div>
-  </div>
+<div class="card">
+  <h1>Random DAREBEE Workout</h1>
+
+  <div class="grid" id="filters"></div>
+
+  <button id="go">Random from Filters</button>
+  <button id="total">Total Random (ignore filters)</button>
+  <div id="status"></div>
+</div>
 
 <script>
 const statusEl = document.getElementById("status");
-const catEl = document.getElementById("cat");
+const filtersEl = document.getElementById("filters");
 const goBtn = document.getElementById("go");
+const totalBtn = document.getElementById("total");
 
 function setStatus(msg, err=false){ statusEl.textContent = msg; statusEl.className = err ? "err" : ""; }
 
-async function loadCategories(){
-  const url = new URL("categories.json", window.location.href).toString();
-  setStatus("Loading categories…");
+async function loadJSON(name){
+  const url = new URL(name, window.location.href).toString();
   const res = await fetch(url, {cache:"no-store"});
-  if(!res.ok) throw new Error(`categories.json fetch failed (HTTP ${res.status})`);
+  if(!res.ok) throw new Error(`${name} fetch failed (HTTP ${res.status})`);
   return res.json();
 }
 
-let CATS = null;
+function pickRandom(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-(async () => {
+function selectedValues(select){
+  return Array.from(select.selectedOptions).map(o => o.value);
+}
+
+let ALL_URLS = null;
+let META = null;
+let FACETS = null;
+let selects = {};
+
+function buildUI(facets){
+  // facets.json is the list of available facet values you’re indexing
+  const facetOrder = ["type","focus","difficulty","tools","equipment","specialty"];
+
+  for (const facet of facetOrder) {
+    const options = facets[facet] || {};
+    const wrap = document.createElement("div");
+
+    const lab = document.createElement("label");
+    lab.textContent = facet.toUpperCase();
+    wrap.appendChild(lab);
+
+    const sel = document.createElement("select");
+    sel.multiple = true;
+
+    Object.keys(options).sort().forEach(key => {
+      const opt = document.createElement("option");
+      opt.value = key;
+      opt.textContent = key;
+      sel.appendChild(opt);
+    });
+
+    selects[facet] = sel;
+    wrap.appendChild(sel);
+    filtersEl.appendChild(wrap);
+  }
+}
+
+function matchesFilters(url, filters){
+  const m = META[url];
+  for (const [facet, wanted] of Object.entries(filters)) {
+    if (!wanted.length) continue; // no filter selected
+    const have = (m && m[facet]) ? m[facet] : [];
+    // OR logic within facet (like Darebee’s “A|B|C” behavior)
+    if (!wanted.some(v => have.includes(v))) return false;
+  }
+  return true;
+}
+
+function getCurrentFilters(){
+  const out = {};
+  for (const facet of Object.keys(selects)) out[facet] = selectedValues(selects[facet]);
+  return out;
+}
+
+async function init(){
   try{
-    CATS = await loadCategories();
-    const names = Object.keys(CATS.categories);
-    if(!names.length) throw new Error("No categories found in categories.json");
-    catEl.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join("");
+    setStatus("Loading data…");
+    const workouts = await loadJSON("workouts.json");
+    ALL_URLS = Array.isArray(workouts) ? workouts : workouts.urls;
+
+    META = await loadJSON("meta.json");
+    FACETS = await loadJSON("facets.json");
+
+    buildUI(FACETS);
     setStatus("Ready.");
-  }catch(e){
+  } catch(e){
     console.error(e);
     setStatus(e.message, true);
+    goBtn.disabled = true;
+    totalBtn.disabled = true;
   }
-})();
+}
 
 goBtn.addEventListener("click", () => {
   try{
-    if(!CATS) throw new Error("Categories not loaded yet.");
-    const name = catEl.value;
-    const urls = CATS.categories[name]?.urls;
-    if(!urls?.length) throw new Error(`No URLs in category: ${name}`);
-    const pick = urls[Math.floor(Math.random() * urls.length)];
-    setStatus("Redirecting…");
-    window.location.href = pick;
-  }catch(e){
+    const filters = getCurrentFilters();
+    const pool = ALL_URLS.filter(u => matchesFilters(u, filters));
+    if (!pool.length) { setStatus("No workouts match those filters.", true); return; }
+    setStatus(`Picking from ${pool.length} workouts…`);
+    location.href = pickRandom(pool);
+  } catch(e){
     console.error(e);
     setStatus(e.message, true);
   }
 });
+
+totalBtn.addEventListener("click", () => {
+  if(!ALL_URLS?.length){ setStatus("Workout list not loaded.", true); return; }
+  setStatus(`Picking from ${ALL_URLS.length} workouts…`);
+  location.href = pickRandom(ALL_URLS);
+});
+
+init();
 </script>
 </body>
 </html>
