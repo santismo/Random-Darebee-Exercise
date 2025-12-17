@@ -16,9 +16,7 @@
     --border:rgba(255,255,255,.09);
     --err:#ff6b6b;
   }
-
   *{ box-sizing:border-box }
-
   body{
     margin:0;
     min-height:100vh;
@@ -26,13 +24,7 @@
     color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   }
-
-  .wrap{
-    max-width:760px;
-    margin:0 auto;
-    padding:16px;
-  }
-
+  .wrap{ max-width:760px; margin:0 auto; padding:16px; }
   .card{
     background:var(--panel);
     border:1px solid var(--border);
@@ -40,21 +32,15 @@
     padding:14px;
     box-shadow:0 20px 60px rgba(0,0,0,.45);
   }
+  h1{ margin:0 0 10px; font-size:1.15rem; font-weight:800; }
 
-  h1{
-    margin:0 0 10px;
-    font-size:1.15rem;
-    font-weight:800;
-  }
-
-  /* Controls */
   .controls{
     display:grid;
     grid-template-columns:1fr 1fr;
     gap:10px;
   }
   @media (max-width:560px){
-    .controls{ grid-template-columns:1fr }
+    .controls{ grid-template-columns:1fr; }
   }
 
   label{
@@ -63,7 +49,6 @@
     color:var(--muted);
     margin-bottom:6px;
   }
-
   select,input{
     width:100%;
     padding:10px 12px;
@@ -71,9 +56,9 @@
     border:1px solid var(--border);
     background:var(--panel2);
     color:var(--text);
+    outline:none;
   }
-
-  select[multiple]{ min-height:132px }
+  select[multiple]{ min-height:132px; }
 
   .buttons{
     display:grid;
@@ -82,9 +67,8 @@
     margin-top:10px;
   }
   @media (max-width:560px){
-    .buttons{ grid-template-columns:1fr }
+    .buttons{ grid-template-columns:1fr; }
   }
-
   button{
     padding:11px 12px;
     border-radius:10px;
@@ -94,21 +78,28 @@
     font-weight:900;
     cursor:pointer;
   }
-
   button.secondary{
     background:transparent;
     color:var(--text);
     border:1px solid var(--border);
+    font-weight:800;
   }
-
-  button:disabled{ opacity:.55; cursor:not-allowed }
+  button:disabled{ opacity:.55; cursor:not-allowed; }
 
   #status{
     margin-top:10px;
     color:var(--muted);
     min-height:1.1em;
   }
-  #status.err{ color:var(--err) }
+  #status.err{ color:var(--err); }
+
+  /* Filters collapsible area */
+  #filtersWrap{
+    margin-top:10px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+  }
+  .hidden{ display:none !important; }
 
   /* One-column list */
   .list{
@@ -117,7 +108,6 @@
     flex-direction:column;
     gap:10px;
   }
-
   .item{
     display:block;
     text-decoration:none;
@@ -127,8 +117,7 @@
     border-radius:14px;
     overflow:hidden;
   }
-
-  /* 🔑 NO CROPPING */
+  /* NO CROPPING */
   .item img{
     width:100%;
     height:auto;
@@ -136,14 +125,12 @@
     object-fit:contain;
     background:#0a0b10;
   }
-
   .meta{
     padding:10px 12px;
     display:flex;
     flex-direction:column;
     gap:6px;
   }
-
   .slug{
     font-size:.86rem;
     color:var(--muted);
@@ -151,13 +138,11 @@
     overflow:hidden;
     text-overflow:ellipsis;
   }
-
   .tags{
     display:flex;
     flex-wrap:wrap;
     gap:6px;
   }
-
   .tag{
     font-size:.75rem;
     padding:3px 8px;
@@ -173,26 +158,33 @@
   <div class="card">
     <h1>Random DAREBEE Workouts</h1>
 
+    <!-- Always-visible controls -->
     <div class="controls">
       <div>
-        <label>How many to display</label>
+        <label for="count">How many to display</label>
         <input id="count" type="number" min="1" max="100" value="12">
       </div>
 
       <div>
-        <label>Mode</label>
+        <label for="mode">Mode</label>
         <select id="mode">
+          <option value="total" selected>Total Random (default)</option>
           <option value="filtered">Filtered Random</option>
-          <option value="total">Total Random</option>
         </select>
       </div>
+    </div>
 
-      <div><label>Type</label><select id="type" multiple></select></div>
-      <div><label>Focus</label><select id="focus" multiple></select></div>
-      <div><label>Difficulty</label><select id="difficulty" multiple></select></div>
-      <div><label>Equipment Type</label><select id="tools" multiple></select></div>
-      <div><label>Equipment</label><select id="equipment" multiple></select></div>
-      <div><label>Specialty</label><select id="specialty" multiple></select></div>
+    <!-- Filters: only shown when mode = filtered -->
+    <div id="filtersWrap" class="hidden">
+      <div class="controls" style="margin-top:0;">
+        <div><label for="type">Type</label><select id="type" multiple></select></div>
+        <div><label for="focus">Focus</label><select id="focus" multiple></select></div>
+        <div><label for="difficulty">Difficulty</label><select id="difficulty" multiple></select></div>
+
+        <div><label for="tools">Equipment Type (Tools)</label><select id="tools" multiple></select></div>
+        <div><label for="equipment">Equipment (Yes/No)</label><select id="equipment" multiple></select></div>
+        <div><label for="specialty">Specialty</label><select id="specialty" multiple></select></div>
+      </div>
     </div>
 
     <div class="buttons">
@@ -213,18 +205,19 @@ const goBtn = document.getElementById("go");
 const clearBtn = document.getElementById("clear");
 const countEl = document.getElementById("count");
 const modeEl = document.getElementById("mode");
+const filtersWrap = document.getElementById("filtersWrap");
 
 const selects = {
   type: document.getElementById("type"),
   focus: document.getElementById("focus"),
   difficulty: document.getElementById("difficulty"),
-  tools: document.getElementById("tools"),
-  equipment: document.getElementById("equipment"),
+  tools: document.getElementById("tools"),           // dumbbells etc.
+  equipment: document.getElementById("equipment"),   // yes/no
   specialty: document.getElementById("specialty"),
 };
 
-let WORKOUTS = null;
-let META = null;
+let WORKOUTS = null;   // array of workout page URLs
+let META = null;       // normalized meta: key is workout page URL
 
 function setStatus(t, err=false){
   statusEl.textContent = t;
@@ -233,37 +226,108 @@ function setStatus(t, err=false){
 
 async function loadJSON(name){
   const url = new URL(name, location.href).toString();
-  const r = await fetch(url, { cache:"no-store" });
-  if(!r.ok) throw new Error(`${name} failed (${r.status})`);
+  const r = await fetch(url, { cache:"no-store", headers:{ "Accept":"application/json" }});
+  if(!r.ok) throw new Error(`${name} failed (HTTP ${r.status})`);
   return r.json();
 }
 
-function pageToImage(url){
-  const slug = url.split("/").pop().replace(".html","");
+function workoutSlugFromUrl(pageUrl){
+  try {
+    const u = new URL(pageUrl);
+    return u.pathname.split("/").pop().replace(/\.html$/i, "");
+  } catch {
+    return String(pageUrl).split("/").pop().replace(/\.html$/i, "");
+  }
+}
+
+function pageToImage(pageUrl){
+  const slug = workoutSlugFromUrl(pageUrl);
   return `https://darebee.com/images/workouts/${slug}.jpg`;
 }
 
-function slug(url){ return url.split("/").pop().replace(".html",""); }
+function normalizeMeta(metaRaw){
+  const out = {};
+  const rawEntries = Object.entries(metaRaw || {});
+  const rawMap = new Map(rawEntries);
+
+  function normFields(m){
+    const mm = m || {};
+    const tools = mm.tools || mm.tool || mm.equipmentType || mm.equipment_type || [];
+    let equipment = mm.equipment || mm.hasEquipment || mm.has_equipment || [];
+
+    const norm = {
+      type: mm.type || [],
+      focus: mm.focus || [],
+      difficulty: mm.difficulty || [],
+      tools: Array.isArray(tools) ? tools.slice() : [],
+      equipment: Array.isArray(equipment) ? equipment.slice() : [],
+      specialty: mm.specialty || [],
+    };
+
+    // If yes/no ended up in tools and equipment is empty, move it
+    if (norm.equipment.length === 0 && Array.isArray(norm.tools)) {
+      const yn = norm.tools.filter(v => v === "yes" || v === "no");
+      if (yn.length) {
+        norm.equipment = yn;
+        norm.tools = norm.tools.filter(v => v !== "yes" && v !== "no");
+      }
+    }
+    return norm;
+  }
+
+  for (const workoutUrl of WORKOUTS){
+    const slug = workoutSlugFromUrl(workoutUrl);
+    const keyFull = workoutUrl;
+    const keySlug = slug;
+    const keyHtml = slug + ".html";
+    const keyPath = "/workouts/" + slug + ".html";
+
+    let found = null;
+    if (rawMap.has(keyFull)) found = rawMap.get(keyFull);
+    else if (rawMap.has(keySlug)) found = rawMap.get(keySlug);
+    else if (rawMap.has(keyHtml)) found = rawMap.get(keyHtml);
+    else if (rawMap.has(keyPath)) found = rawMap.get(keyPath);
+
+    if (!found) {
+      for (const [k, v] of rawEntries) {
+        if (typeof k === "string" && k.includes(slug) && k.endsWith(".html")) { found = v; break; }
+      }
+    }
+
+    out[workoutUrl] = normFields(found);
+  }
+
+  return out;
+}
 
 function selected(sel){
-  return Array.from(sel.selectedOptions).map(o=>o.value);
+  return Array.from(sel.selectedOptions).map(o => o.value);
 }
 
 function matches(url, filters){
   const m = META[url] || {};
-  for(const [k,v] of Object.entries(filters)){
-    if(!v.length) continue;
-    if(!v.some(x => (m[k]||[]).includes(x))) return false;
+  for(const [facet, wanted] of Object.entries(filters)){
+    if(!wanted.length) continue;
+    const have = Array.isArray(m[facet]) ? m[facet] : [];
+    if(!wanted.some(x => have.includes(x))) return false; // OR logic within facet
   }
   return true;
 }
 
-function sample(arr,n){
-  const out = new Set();
-  while(out.size < Math.min(n, arr.length)){
-    out.add(arr[Math.floor(Math.random()*arr.length)]);
+function sample(arr, n){
+  const k = Math.min(n, arr.length);
+  const picked = new Set();
+  while(picked.size < k){
+    picked.add(Math.floor(Math.random() * arr.length));
   }
-  return [...out];
+  return Array.from(picked).map(i => arr[i]);
+}
+
+function makeTag(text){
+  const t = document.createElement("span");
+  t.className = "tag";
+  t.textContent = text;
+  return t;
 }
 
 function makeItem(url){
@@ -271,94 +335,140 @@ function makeItem(url){
   a.className = "item";
   a.href = url;
   a.target = "_blank";
+  a.rel = "noopener noreferrer";
 
   const img = document.createElement("img");
   img.loading = "lazy";
-  img.src = pageToImage(url);
-  img.onerror = () => {
-    if(WORKOUTS?.length){
-      const r = WORKOUTS[Math.floor(Math.random()*WORKOUTS.length)];
-      img.src = pageToImage(r);
-      a.href = r;
-    }
-  };
 
   const meta = document.createElement("div");
   meta.className = "meta";
 
   const s = document.createElement("div");
   s.className = "slug";
-  s.textContent = slug(url);
 
   const tags = document.createElement("div");
   tags.className = "tags";
 
-  Object.entries(META[url]||{}).forEach(([k,v])=>{
-    v.slice(0,2).forEach(x=>{
-      const t=document.createElement("span");
-      t.className="tag";
-      t.textContent=`${k}:${x}`;
-      tags.appendChild(t);
-    });
-  });
+  function setFromPage(pageUrl){
+    a.href = pageUrl;
+    s.textContent = workoutSlugFromUrl(pageUrl);
+    img.src = pageToImage(pageUrl);
 
-  meta.append(s,tags);
-  a.append(img,meta);
+    // Only show tags when in filtered mode (cleaner)
+    tags.innerHTML = "";
+    if (modeEl.value === "filtered") {
+      const m = META[pageUrl] || {};
+      ["type","focus","difficulty","tools","equipment","specialty"].forEach(k=>{
+        (m[k] || []).slice(0,2).forEach(v => tags.appendChild(makeTag(`${k}:${v}`)));
+      });
+    }
+  }
+
+  img.onerror = () => {
+    if(!WORKOUTS?.length) return;
+    const replacement = WORKOUTS[Math.floor(Math.random() * WORKOUTS.length)];
+    setFromPage(replacement);
+  };
+
+  setFromPage(url);
+  meta.appendChild(s);
+  meta.appendChild(tags);
+
+  a.appendChild(img);
+  a.appendChild(meta);
   return a;
+}
+
+function updateFiltersVisibility(){
+  const show = modeEl.value === "filtered";
+  filtersWrap.classList.toggle("hidden", !show);
+  // Only enable clear button when filters are visible
+  clearBtn.disabled = !show;
 }
 
 async function init(){
   try{
-    setStatus("Loading data…");
-    const w = await loadJSON("workouts.json");
-    WORKOUTS = Array.isArray(w)?w:w.urls;
-    META = await loadJSON("meta.json");
+    // Default mode = total random
+    modeEl.value = "total";
+    updateFiltersVisibility();
 
-    for(const k in selects){
+    setStatus("Loading workouts + meta…");
+
+    const w = await loadJSON("workouts.json");
+    WORKOUTS = Array.isArray(w) ? w : w.urls;
+    if(!Array.isArray(WORKOUTS) || !WORKOUTS.length) throw new Error("workouts.json has no URLs");
+
+    const metaRaw = await loadJSON("meta.json");
+    META = normalizeMeta(metaRaw);
+
+    // Populate dropdown options from normalized META
+    for(const facet of Object.keys(selects)){
       const vals = new Set();
-      WORKOUTS.forEach(u => (META[u]?.[k]||[]).forEach(v=>vals.add(v)));
-      selects[k].innerHTML = [...vals].sort().map(v=>`<option>${v}</option>`).join("");
+      for (const u of WORKOUTS){
+        (META[u]?.[facet] || []).forEach(v => vals.add(v));
+      }
+      selects[facet].innerHTML = Array.from(vals).sort()
+        .map(v => `<option value="${v}">${v}</option>`).join("");
     }
 
     setStatus("Ready.");
     generate();
-  }catch(e){
+
+  } catch(e){
     console.error(e);
-    setStatus(e.message,true);
+    setStatus("Error: " + e.message, true);
+    goBtn.disabled = true;
+    modeEl.disabled = true;
+    clearBtn.disabled = true;
   }
+}
+
+function clearFilters(){
+  Object.values(selects).forEach(sel => Array.from(sel.options).forEach(o => o.selected = false));
 }
 
 function generate(){
   try{
-    const n = Math.max(1, parseInt(countEl.value)||12);
-    const filters = {};
-    Object.keys(selects).forEach(k => filters[k]=selected(selects[k]));
+    if(!WORKOUTS || !META) { setStatus("Not loaded yet.", true); return; }
+
+    const n = Math.max(1, Math.min(100, parseInt(countEl.value, 10) || 12));
 
     let pool = WORKOUTS;
-    if(modeEl.value !== "total"){
-      pool = WORKOUTS.filter(u => matches(u,filters));
+
+    if(modeEl.value === "filtered"){
+      const filters = {};
+      Object.keys(selects).forEach(k => filters[k] = selected(selects[k]));
+      pool = WORKOUTS.filter(u => matches(u, filters));
     }
 
     if(!pool.length){
-      setStatus("No matches.",true);
-      listEl.innerHTML="";
+      setStatus("No workouts match those filters.", true);
+      listEl.innerHTML = "";
       return;
     }
 
-    setStatus(`Showing ${Math.min(n,pool.length)} workouts`);
-    listEl.innerHTML="";
-    sample(pool,n).forEach(u=>listEl.appendChild(makeItem(u)));
-  }catch(e){
+    setStatus(`Showing ${Math.min(n, pool.length)} workouts (pool: ${pool.length})`);
+    listEl.innerHTML = "";
+    sample(pool, n).forEach(u => listEl.appendChild(makeItem(u)));
+
+  } catch(e){
     console.error(e);
-    setStatus(e.message,true);
+    setStatus("Error: " + e.message, true);
   }
 }
 
-goBtn.onclick = generate;
-clearBtn.onclick = () => {
-  Object.values(selects).forEach(s=>[...s.options].forEach(o=>o.selected=false));
+goBtn.addEventListener("click", generate);
+
+clearBtn.addEventListener("click", () => {
+  clearFilters();
   setStatus("Filters cleared.");
-};
+});
+
+modeEl.addEventListener("change", () => {
+  updateFiltersVisibility();
+  // Optional: refresh results automatically when switching modes
+  generate();
+});
 
 init();
 </script>
