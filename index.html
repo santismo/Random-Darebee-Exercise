@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Random DAREBEE Workout</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; padding: 24px; line-height: 1.4; }
+    button { font-size: 18px; padding: 12px 16px; cursor: pointer; }
+    code { background: #f2f2f2; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Random DAREBEE Workout</h1>
+  <p>Opens a random workout from <code>1</code> to <code>2629</code>.</p>
+
+  <button id="go">Get Random Workout</button>
+  <p id="status"></p>
+
+  <script>
+    const MIN = 1;
+    const MAX = 2629;
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function openRandomWorkout() {
+      const n = randInt(MIN, MAX);
+      const url = `https://darebee.com/workouts/${n}.html`;
+      document.getElementById("status").textContent = `Loading workout #${n}…`;
+      // Redirect this tab:
+      window.location.href = url;
+
+      // If you'd rather open in a new tab, use:
+      // window.open(url, "_blank", "noopener,noreferrer");
+    }
+
+    document.getElementById("go").addEventListener("click", openRandomWorkout);
+
+    // Optional: auto-run on page load
+    // openRandomWorkout();
+  </script>
+</body>
+</html>
