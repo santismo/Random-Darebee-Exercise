@@ -1,4 +1,38 @@
 {
+  "https://darebee.com/workouts/true-north-workout.html": {
+    "type": [
+      "strength",
+      "strength"
+    ],
+    "focus": [
+      "full-body",
+      "full-body"
+    ],
+    "difficulty": [
+      "normal",
+      "normal"
+    ],
+    "tools": [],
+    "specialty": [],
+    "equipment": []
+  },
+  "https://darebee.com/workouts/climb-workout.html": {
+    "type": [
+      "metcon",
+      "metcon"
+    ],
+    "focus": [
+      "abs",
+      "abs"
+    ],
+    "difficulty": [
+      "normal",
+      "normal"
+    ],
+    "tools": [],
+    "specialty": [],
+    "equipment": []
+  },
   "https://darebee.com/workouts/moonbow-workout.html": {
     "type": [
       "yoga",
@@ -223,7 +257,6 @@
       "combat"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -240,7 +273,6 @@
       "strength"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -257,7 +289,6 @@
       "stretching"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -466,14 +497,12 @@
   },
   "https://darebee.com/workouts/scorpio-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
       "full-body"
     ],
     "difficulty": [
-      "normal",
       "normal"
     ],
     "tools": [],
@@ -499,7 +528,6 @@
   },
   "https://darebee.com/workouts/reno-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
@@ -531,7 +559,6 @@
   },
   "https://darebee.com/workouts/bicep-builder-no-equipment-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
@@ -548,7 +575,6 @@
   },
   "https://darebee.com/workouts/bicep-builder-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
@@ -556,7 +582,6 @@
       "upper-body"
     ],
     "difficulty": [
-      "normal",
       "normal"
     ],
     "tools": [
@@ -623,7 +648,6 @@
       "full-body"
     ],
     "difficulty": [
-      "normal",
       "normal"
     ],
     "tools": [],
@@ -647,7 +671,6 @@
   },
   "https://darebee.com/workouts/restart-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
@@ -875,7 +898,6 @@
       "full-body"
     ],
     "difficulty": [
-      "hard",
       "hard"
     ],
     "tools": [],
@@ -1006,7 +1028,6 @@
       "full-body"
     ],
     "difficulty": [
-      "hard",
       "hard"
     ],
     "tools": [],
@@ -1044,7 +1065,6 @@
   },
   "https://darebee.com/workouts/hells-bells-workout.html": {
     "type": [
-      "metcon",
       "metcon"
     ],
     "focus": [
@@ -2037,7 +2057,6 @@
       "strength"
     ],
     "focus": [
-      "upper-body",
       "upper-body"
     ],
     "difficulty": [
@@ -2074,7 +2093,6 @@
       "normal"
     ],
     "tools": [
-      "dumbbells",
       "dumbbells"
     ],
     "specialty": [],
@@ -3752,7 +3770,6 @@
       "full-body"
     ],
     "difficulty": [
-      "advanced",
       "advanced"
     ],
     "tools": [
@@ -4902,7 +4919,6 @@
       "yoga"
     ],
     "focus": [
-      "abs",
       "abs"
     ],
     "difficulty": [
@@ -5953,7 +5969,6 @@
       "strength"
     ],
     "focus": [
-      "abs",
       "abs"
     ],
     "difficulty": [
