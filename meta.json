@@ -155,7 +155,6 @@
       "yoga"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -172,7 +171,6 @@
       "strength"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -189,7 +187,6 @@
       "metcon"
     ],
     "focus": [
-      "full-body",
       "full-body"
     ],
     "difficulty": [
@@ -298,7 +295,6 @@
   },
   "https://darebee.com/workouts/kpop-idol-workout.html": {
     "type": [
-      "strength",
       "strength"
     ],
     "focus": [
@@ -371,7 +367,6 @@
       "full-body"
     ],
     "difficulty": [
-      "normal",
       "normal"
     ],
     "tools": [],
@@ -387,7 +382,6 @@
       "full-body"
     ],
     "difficulty": [
-      "normal",
       "normal"
     ],
     "tools": [],
@@ -764,7 +758,6 @@
       "lower-body"
     ],
     "difficulty": [
-      "hard",
       "hard"
     ],
     "tools": [],
@@ -1412,7 +1405,6 @@
   },
   "https://darebee.com/workouts/snapback-workout.html": {
     "type": [
-      "cardio",
       "cardio"
     ],
     "focus": [
@@ -1461,7 +1453,6 @@
   },
   "https://darebee.com/workouts/lazy-cardio-workout.html": {
     "type": [
-      "cardio",
       "cardio"
     ],
     "focus": [
@@ -1654,7 +1645,6 @@
       "upper-body"
     ],
     "difficulty": [
-      "light",
       "light"
     ],
     "tools": [],
@@ -2004,7 +1994,6 @@
       "normal"
     ],
     "tools": [
-      "dumbbells",
       "dumbbells"
     ],
     "specialty": [],
@@ -2107,7 +2096,6 @@
       "cardio"
     ],
     "focus": [
-      "lower-body",
       "lower-body"
     ],
     "difficulty": [
@@ -2561,7 +2549,6 @@
   },
   "https://darebee.com/workouts/equinox-workout.html": {
     "type": [
-      "yoga",
       "yoga"
     ],
     "focus": [
